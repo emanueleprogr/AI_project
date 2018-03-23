@@ -11,6 +11,7 @@ infinity = float('inf')
 
 
 
+
 class Node:
 
     """A node in a search tree. Contains a pointer to the parent (the node
@@ -37,9 +38,8 @@ class Node:
     def __repr__(self):
         """(pf) Modified to display depth, f and h"""
         if hasattr(self, 'f'):
-            return "<Node: f=%d, depth=%d, h=%d\n%s>" % (self.f,
+            return "<Node: f=%d, depth=%d\n%s>" % (self.f,
                                                          self.depth,
-                                                         self.h,
                                                          self.state)
         else:
             return "<Node: depth=%d\n%s>" % (self.depth, self.state)
@@ -49,7 +49,7 @@ class Node:
 
     def expand(self, problem):
         """Return a list of nodes reachable from this node. [Fig. 3.8]"""
-        return [Node(next_state, self, action, i, j,
+        return [Node(next_state, i, j, self, action,
                      problem.path_cost(self.path_cost, self.state, action, next_state))
                 for (action, next_state, i, j) in problem.successor(self.state)]
 
@@ -89,21 +89,32 @@ def tree_search(problem, frontier):
     return None
 
 
-def graph_search(problem, frontier):
+def graph_search(problem, fringe):
     """Search through the successors of a problem to find a goal.
-    The argument frontier should be an empty queue.
-    Does not get trapped by loops.
-    If two paths reach a state, only use the first one. [Figure 3.7]"""
-    frontier.append(Node(problem.initial))
-    explored = set()
-    while frontier:
-        node = frontier.pop()
+    The argument fringe should be an empty queue.
+    If two paths reach a state, only use the best one. [Fig. 3.18]"""
+    closed = {}
+    fringe.append(Node(problem.initial,problem.i, problem.j))
+    max_depth=0
+    while fringe:
+        node = fringe.pop()
+        # Print some information about search progress
+        if node.depth>max_depth:
+            max_depth=node.depth
+            if max_depth<50 or max_depth % 1000 == 0:
+                pid = os.getpid()
+                py = psutil.Process(pid)
+                memoryUse = py.memory_info()[0]/1024/1024
+                print('Reached depth',max_depth,
+                      'Open len', len(fringe),
+                      'Memory used (MBytes)', memoryUse)
+
         if problem.goal_test(node.state):
             return node
-        explored.add(node.state)
-        frontier.extend(child for child in node.expand(problem)
-                        if child.state not in explored and
-                        child not in frontier)
+        serial = node.state.__str__()
+        if serial not in closed:
+            closed[serial] = True
+            fringe.extend(node.expand(problem))
     return None
 
 

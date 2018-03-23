@@ -4,6 +4,11 @@ from __future__ import generators
 from copy import deepcopy
 import math
 import random
+from utils import FIFOQueue,PriorityQueue,Stack,infinity,memoize,name,print_table,update
+import sys
+import time
+import os
+import psutil
 
 # ______________________________________________________________________________
 
@@ -25,7 +30,7 @@ class Problem:
         from this state. If there are many successors, consider an iterator
         that yields the successors one at a time, rather than building them
         all at once. Iterators will work fine within the framework."""
-        pass # abstract
+        pass  # abstract
 
     def goal_test(self, state):
         """Return True if the state is a goal. The default method compares the
@@ -42,8 +47,6 @@ class Problem:
         return c + 1
 
 
-
-
 # ______________________________________________________________________________
 
 class Vase:
@@ -57,22 +60,23 @@ class Vase:
 
 class WaterDistributionState:
 
-    def __init__(self,vases,r,c, cost = 0):
-        self.vases=vases
-        self.r=r
-        self.c= c
+    def __init__(self, vases, n, r, c, cost=0):
+        self.n = n
+        self.vases = vases
+        self.r = r
+        self.c = c
         self.cost = cost
 
-    def __getitem__(self,i):
+    def __getitem__(self, i):
         return self.vases[i]
-    
-    def __setitem__(self,i,val,cap,posX,posY):
+
+    def __setitem__(self, i, val, cap, posX, posY):
         self.vases[i].value = val
         self.vases[i].cap = cap
         self.vases[i].posX = posX
         self.vases[i].posY = posY
 
-    def act(self, action, i, y = 0):
+    def act(self, action, i, y=0):
         ch = deepcopy(self)
 
         if action == 'empty':
@@ -81,22 +85,22 @@ class WaterDistributionState:
         elif action == 'pump':
 
             dist = math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
-            ch.cost = 5 * dist * self.vases[i].value
+            ch.cost = 1 * dist * self.vases[i].value
             self.vases[i].value = self.vases[i].cap
-            ch.cost = ch.cost + (5 * dist * self.vases[i].value)
+            ch.cost = ch.cost + (1 * dist * self.vases[i].value)
 
         elif action == 'takeFromI' and self.vases[y].value >= self.vases[i].cap - self.vases[i].value:
 
             dist = math.hypot(self.vases[y].posX - self.vases[i].posX, self.vases[y].posY - self.vases[i].posY)
-            ch.cost = 5 * dist * self.vases[i].value
+            ch.cost = 1 * dist * self.vases[i].value
             self.vases[i].value = self.vases[i].cap
             self.vases[y].value = self.vases[y].value - (self.vases[i].cap - self.vases[i].value)
-            ch.cost = ch.cost + (5 * dist * self.vases[i].value)
+            ch.cost = ch.cost + (1 * dist * self.vases[i].value)
 
         elif action == 'transferFromI' and self.vases[i].value <= self.vases[y].cap - self.vases[y].value:
 
             dist = math.hypot(self.vases[y].posX - self.vases[i].posX, self.vases[y].posY - self.vases[i].posY)
-            ch.cost = 5 * dist * self.vases[i].value
+            ch.cost = 1 * dist * self.vases[i].value
 
             self.vases[y].value = self.vases[y].value + self.vases[i].value
             self.vases[i].value = 0
@@ -104,6 +108,27 @@ class WaterDistributionState:
             return None
 
         return ch
+
+    def heuristic(self):
+        i = 0
+        goal_difference = 0
+        while i < len(self.vases):
+            goal_difference = goal_difference + abs(self.vases[i].goal - self.vases[i]. value)
+            i = i + 1
+        return goal_difference
+
+    def __str__(self):
+        """Serialize the state in a human-readable form"""
+        s = ''
+
+        return s
+    def __repr__(self):
+        return self.__str__()
+
+
+
+
+
 
 
 class WaterPump(Problem):
@@ -113,7 +138,6 @@ class WaterPump(Problem):
         self.i = i
         self.j = j
         self.make_initial_state(n, r, c)
-
 
     def make_initial_state(self, n, r, c):
         vases = []
@@ -126,12 +150,11 @@ class WaterPump(Problem):
 
         vases.append(Vase(n, n, 1, 1))
 
-        self.initial = WaterDistributionState(vases, r, c)
+        self.initial = WaterDistributionState(vases,n, r, c)
 
         print('Problem:', self.__doc__, 'Initial state:')
         print(self.initial)
         print('==============')
-
 
     def goal_test(self, state):
         for i in range(self.n):
@@ -142,13 +165,12 @@ class WaterPump(Problem):
 
     def path_cost(self, c, state1, action, state2):
         if action == 'empty':
-            return
+            return c
 
-        elif action == 'pump' or action == 'takeFromI'or action == 'transferFromI':
+        elif action == 'pump' or action == 'takeFromI' or action == 'transferFromI':
             return c + state2.cost
 
-
-    def h(self,node):
+    def h(self, node):
         """No heuristic. A* becomes uniform cost in this case"""
         return 0
 
@@ -158,7 +180,7 @@ class WaterPump(Problem):
         list = range(self.n)
         for action in self.actions:
             if action == 'empty' or action == 'pump':
-                y=0
+                y = 0
                 for i in list:
                     nexts = state.act(action, i)
                     if nexts is not None:
@@ -166,7 +188,11 @@ class WaterPump(Problem):
             else:
                 for x in list:
                     for y in list:
-                        if x !=y :
+                        if x != y:
                             nexts = state.act(action, x, y)
                             if nexts is not None:
-                                yield(action, nexts, x, y)
+                                yield (action, nexts, x, y)
+
+class WaterPumpRelaxed(WaterPump):
+    def h(self, node):
+        return node.state.heuristic()

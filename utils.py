@@ -1,6 +1,7 @@
 from __future__ import generators
 import operator, math, random, copy, sys, os.path, bisect
-
+from collections import deque
+from heapq import heappush, heappop
 # ______________________________________________________________________________
 # Compatibility with Python 2.2 and 2.3
 
@@ -717,10 +718,11 @@ class Queue:
     as lists.  If Python ever gets interfaces, Queue will be an interface."""
 
     def __init__(self):
-        abstract
+        raise  NotImplementedError
 
     def extend(self, items):
-        for item in items: self.append(item)
+        for item in items:
+            self.append(item)
 
 
 def Stack():
