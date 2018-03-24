@@ -1,19 +1,13 @@
 from __future__ import print_function
 from __future__ import generators
-from utils import FIFOQueue,PriorityQueue,Stack,infinity,memoize,name,print_table,update
+from utils import PriorityQueue, infinity, memoize, name, print_table, update
 import sys
 import time
 import os
 import psutil
 
 
-infinity = float('inf')
-
-
-
-
 class Node:
-
     """A node in a search tree. Contains a pointer to the parent (the node
     that this is a successor of) and to the actual state for this node. Note
     that if a state is arrived at by two paths, then there are two nodes with
@@ -36,11 +30,12 @@ class Node:
             self.depth = parent.depth + 1
 
     def __repr__(self):
-        """(pf) Modified to display depth, f and h"""
+        """display depth, f, action and state"""
         if hasattr(self, 'f'):
-            return "<Node: f=%d, depth=%d\n%s>" % (self.f,
-                                                         self.depth,
-                                                         self.state)
+            return "<Node: f=%d, depth=%d, action=%s\n%s>" % (self.f,
+                                                              self.depth,
+                                                              self.action,
+                                                              self.state)
         else:
             return "<Node: depth=%d\n%s>" % (self.depth, self.state)
 
@@ -48,13 +43,10 @@ class Node:
         return self.state < node.state
 
     def expand(self, problem):
-        """Return a list of nodes reachable from this node. [Fig. 3.8]"""
+        """Return a list of nodes reachable from this node."""
         return [Node(next_state, i, j, self, action,
                      problem.path_cost(self.path_cost, self.state, action, next_state))
                 for (action, next_state, i, j) in problem.successor(self.state)]
-
-
-
 
     def path(self):
         """ Create a list of nodes from the root to this node."""
@@ -76,38 +68,25 @@ class Node:
         return hash(self.state)
 
 
-def tree_search(problem, frontier):
-    """Search through the successors of a problem to find a goal.
-    The argument frontier should be an empty queue.
-    Repeats infinites in case of loops. [Figure 3.7]"""
-    frontier.append(Node(problem.initial))
-    while frontier:
-        node = frontier.pop()
-        if problem.goal_test(node.state):
-            return node
-        frontier.extend(node.expand(problem))
-    return None
-
-
 def graph_search(problem, fringe):
     """Search through the successors of a problem to find a goal.
     The argument fringe should be an empty queue.
-    If two paths reach a state, only use the best one. [Fig. 3.18]"""
+    If two paths reach a state, only use the best one."""
     closed = {}
-    fringe.append(Node(problem.initial,problem.i, problem.j))
-    max_depth=0
+    fringe.append(Node(problem.initial, problem.i, problem.j))
+    max_depth = 0
     while fringe:
         node = fringe.pop()
         # Print some information about search progress
-        if node.depth>max_depth:
-            max_depth=node.depth
-            if max_depth<50 or max_depth % 1000 == 0:
+        if node.depth > max_depth:
+            max_depth = node.depth
+            if max_depth < 50 or max_depth % 1000 == 0:
                 pid = os.getpid()
                 py = psutil.Process(pid)
-                memoryUse = py.memory_info()[0]/1024/1024
-                print('Reached depth',max_depth,
+                memory_use = py.memory_info()[0] / 1024 / 1024
+                print('Reached depth', max_depth,
                       'Open len', len(fringe),
-                      'Memory used (MBytes)', memoryUse)
+                      'Memory used (MBytes)', memory_use)
 
         if problem.goal_test(node.state):
             return node
@@ -117,56 +96,9 @@ def graph_search(problem, fringe):
             fringe.extend(node.expand(problem))
     return None
 
-
-def breadth_first_tree_search(problem):
-    """Search the shallowest nodes in the search tree first."""
-    return tree_search(problem, FIFOQueue())
-
-
-def depth_first_tree_search(problem):
-    """Search the deepest nodes in the search tree first."""
-    return tree_search(problem, Stack())
-
-
-def depth_first_graph_search(problem):
-    """Search the deepest nodes in the search tree first."""
-    return graph_search(problem, Stack())
-
-def depth_limited_search(problem, limit=10):
-    "[Fig. 3.12]"
-    def recursive_dls(node, problem, limit):
-        cutoff_occurred = False
-        if problem.goal_test(node.state):
-            return node
-        elif node.depth == limit:
-            return 'cutoff'
-        else:
-            for successor in node.expand(problem):
-                result = recursive_dls(successor, problem, limit)
-                if result == 'cutoff':
-                    cutoff_occurred = True
-                elif result != None:
-                    return result
-        if cutoff_occurred:
-            return 'cutoff'
-        else:
-            return None
-    # Body of depth_limited_search:
-    return recursive_dls(Node(problem.initial), problem, limit)
-
-def iterative_deepening_search(problem):
-    "[Fig. 3.13]"
-    for depth in xrange(sys.maxint):
-        result = depth_limited_search(problem, depth)
-        pid = os.getpid()
-        py = psutil.Process(pid)
-        memoryUse = py.memory_info()[0]/1024/1024
-        print('end depth_limited_search at depth', depth, 'mem (GBytes)', memoryUse)
-        if result is not 'cutoff':
-            return result
-
 # ______________________________________________________________________________
 # Informed (Heuristic) Search
+
 
 def best_first_graph_search(problem, f):
     """Search the nodes with the lowest f scores first.
@@ -180,16 +112,14 @@ def best_first_graph_search(problem, f):
     return graph_search(problem, PriorityQueue(min, f))
 
 
-
 def astar_search(problem, h=None):
     """A* search is best-first graph search with f(n) = g(n)+h(n).
     You need to specify the h function when you call astar_search.
     Uses the pathmax trick: f(n) = max(f(n), g(n)+h(n))."""
     h = h or problem.h
     h = memoize(h, 'h')
+
     def f(n):
         return max(getattr(n, 'f', -infinity), n.path_cost + h(n))
+
     return best_first_graph_search(problem, f)
-
-
-

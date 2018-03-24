@@ -3,14 +3,10 @@ from __future__ import generators
 
 from copy import deepcopy
 import math
-import random
-from utils import FIFOQueue,PriorityQueue,Stack,infinity,memoize,name,print_table,update
-import sys
-import time
-import os
-import psutil
+
 
 # ______________________________________________________________________________
+
 
 class Problem:
     """The abstract class for a formal problem.  You should subclass this and
@@ -85,22 +81,22 @@ class WaterDistributionState:
         elif action == 'pump':
 
             dist = math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
-            ch.cost = 0.1 * dist * self.vases[i].value
+            ch.cost = 1 * dist * self.vases[i].value
             ch.vases[i].value = self.vases[i].cap
-            ch.cost = ch.cost + (0.1 * dist * ch.vases[i].value)
+            ch.cost = ch.cost + (1 * dist * ch.vases[i].value)
 
         elif action == 'takeFromI' and self.vases[y].value >= self.vases[i].cap - self.vases[i].value and self.vases[i].value != self.vases[i].cap and self.vases[y].value != 0:
 
             dist = math.hypot(self.vases[y].posX - self.vases[i].posX, self.vases[y].posY - self.vases[i].posY)
-            ch.cost = 0.1 * dist * self.vases[i].value
+            ch.cost = 1 * dist * self.vases[i].value
             ch.vases[y].value = self.vases[y].value - (self.vases[i].cap - self.vases[i].value)
             ch.vases[i].value = self.vases[i].cap
-            ch.cost = ch.cost + (0.1 * dist * ch.vases[i].value)
+            ch.cost = ch.cost + (1 * dist * ch.vases[i].value)
 
         elif action == 'transferFromI' and self.vases[i].value <= self.vases[y].cap - self.vases[y].value and self.vases[y].value != self.vases[y].cap and self.vases[i].value != 0:
 
             dist = math.hypot(self.vases[y].posX - self.vases[i].posX, self.vases[y].posY - self.vases[i].posY)
-            ch.cost = 0.1 * dist * self.vases[i].value
+            ch.cost = 1 * dist * self.vases[i].value
 
             ch.vases[y].value = self.vases[y].value + self.vases[i].value
             ch.vases[i].value = 0
@@ -124,26 +120,21 @@ class WaterDistributionState:
         for r in xrange(self.n):
             for c in xrange(self.n):
                 if r == self.r and c == self.c:
-                    s += 'pump'
+                    s += '(P,P)'
                     empty = False
                 for i in xrange(len(self.vases)):
                     if r == self.vases[i].posX and c == self.vases[i].posY:
-                        s += '%3d' % self.vases[i].value
-                        s += ',%d' % self.vases[i].goal
+                        s += '(%d' % self.vases[i].value
+                        s += ',%d)' % self.vases[i].goal
                         empty = False
 
-                if empty == True:
-                    s += ' 1 '
+                if empty is True:
+                    s += '(- -)'
                 empty = True
             s += '\n'
         return s
     def __repr__(self):
         return self.__str__()
-
-
-
-
-
 
 
 class WaterPump(Problem):
@@ -156,12 +147,9 @@ class WaterPump(Problem):
 
     def make_initial_state(self, n, r, c):
         vases = []
-
-
-
         vases.append(Vase(1, 3, 2, 4))
-
         vases.append(Vase(n-1, n-1, 1, 1))
+        vases.append(Vase(1, 1, 3, 4))
 
         self.initial = WaterDistributionState(vases, self.i, r, c)
 
@@ -188,8 +176,7 @@ class WaterPump(Problem):
         return 0
 
     def successor(self, state):
-        """Legal moves (blank moves left, right, up,
-        down). Implemented as a generator"""
+        """Legal moves (empty, pump, takeFromI, transferFromI). Implemented as a generator"""
         list = range(self.n)
         for action in self.actions:
             if action == 'empty' or action == 'pump':
@@ -205,6 +192,7 @@ class WaterPump(Problem):
                             nexts = state.act(action, x, y)
                             if nexts is not None:
                                 yield (action, nexts, x, y)
+
 
 class WaterPumpRelaxed(WaterPump):
     """Admissible heuristic"""
