@@ -120,16 +120,16 @@ class WaterDistributionState:
         for r in xrange(self.n):
             for c in xrange(self.n):
                 if r == self.r and c == self.c:
-                    s += '(P,P)'
+                    s += '[P,P]'
                     empty = False
                 for i in xrange(len(self.vases)):
                     if r == self.vases[i].posX and c == self.vases[i].posY:
-                        s += '(%d' % self.vases[i].value
-                        s += ',%d)' % self.vases[i].goal
+                        s += '[%d' % self.vases[i].value
+                        s += ',%d]' % self.vases[i].goal
                         empty = False
 
                 if empty is True:
-                    s += '(- -)'
+                    s += '|- -|'
                 empty = True
             s += '\n'
         return s

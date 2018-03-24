@@ -66,28 +66,6 @@ except NameError:
             yield seq[i]
 
 try:
-    sorted  ## Introduced in 2.4
-except NameError:
-    def sorted(seq, cmp=None, key=None, reverse=False):
-        """Copy seq and sort and return it.
-        >>> sorted([3, 1, 2])
-        [1, 2, 3]
-        """
-        seq2 = copy.copy(seq)
-        if key:
-            if cmp == None:
-                cmp = __builtins__.cmp
-            seq2.sort(lambda x, y: cmp(key(x), key(y)))
-        else:
-            if cmp == None:
-                seq2.sort()
-            else:
-                seq2.sort(cmp)
-        if reverse:
-            seq2.reverse()
-        return seq2
-
-try:
     set, frozenset  ## set builtin introduced in 2.4
 except NameError:
     try:
@@ -775,8 +753,4 @@ class PriorityQueue(Queue):
         else:
             return self.A.pop()[1]
 
-
-## Fig: The idea is we can define things like Fig[3,10] later.
-## Alas, it is Fig[3,10] not Fig[3.10], because that would be the same as Fig[3.1]
-Fig = {}
 

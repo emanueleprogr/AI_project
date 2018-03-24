@@ -32,7 +32,7 @@ class Node:
     def __repr__(self):
         """display depth, f, action and state"""
         if hasattr(self, 'f'):
-            return "<Node: f=%d, depth=%d, action=%s\n%s>" % (self.f,
+            return "\n<Node: f=%d, depth=%d, action=%s\n\n%s\n>" % (self.f,
                                                               self.depth,
                                                               self.action,
                                                               self.state)
