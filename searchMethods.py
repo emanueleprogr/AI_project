@@ -1,6 +1,7 @@
 from __future__ import print_function
 from __future__ import generators
 from utils import PriorityQueue, infinity, memoize, name, print_table, update
+from waterPump import Problem
 import sys
 import time
 import os
@@ -30,11 +31,12 @@ class Node:
             self.depth = parent.depth + 1
 
     def __repr__(self):
-        """display depth, f, action and state"""
+        """display depth, f, action, path_cost and state"""
         if hasattr(self, 'f'):
-            return "\n<Node: f=%d, depth=%d, action=%s\n\n%s\n>" % (self.f,
+            return "\n<Node: f=%d, depth=%d, action=%s, path_cost=%d\n\n%s\n>" % (self.f,
                                                               self.depth,
                                                               self.action,
+                                                              self.path_cost,
                                                               self.state)
         else:
             return "<Node: depth=%d\n%s>" % (self.depth, self.state)
@@ -68,15 +70,16 @@ class Node:
         return hash(self.state)
 
 
-def graph_search(problem, fringe):
+def graph_search(problem, frontier):
     """Search through the successors of a problem to find a goal.
     The argument fringe should be an empty queue.
     If two paths reach a state, only use the best one."""
     closed = {}
-    fringe.append(Node(problem.initial, problem.i, problem.j))
+    frontier.append(Node(problem.initial, problem.i, problem.j))
     max_depth = 0
-    while fringe:
-        node = fringe.pop()
+    counter = 0
+    while frontier:
+        node = frontier.pop()
         # Print some information about search progress
         if node.depth > max_depth:
             max_depth = node.depth
@@ -85,15 +88,21 @@ def graph_search(problem, fringe):
                 py = psutil.Process(pid)
                 memory_use = py.memory_info()[0] / 1024 / 1024
                 print('Reached depth', max_depth,
-                      'Open len', len(fringe),
+                      'Open len', len(frontier),
                       'Memory used (MBytes)', memory_use)
 
         if problem.goal_test(node.state):
+            print('\n**************** Stats:\nTotal nodes expanded :', counter)
+            print('Solution depth :', node.depth)
+            print('Penetrance :', float(node.depth)/counter)
+            print('Effective branching factor ~ ', effective_branchingf(counter, node.depth))
+            print('Path cost :', node.path_cost, '\n**************** Solution:\n')
             return node
         serial = node.state.__str__()
         if serial not in closed:
             closed[serial] = True
-            fringe.extend(node.expand(problem))
+            counter += 1
+            frontier.extend(node.expand(problem))
     return None
 
 # ______________________________________________________________________________
@@ -123,3 +132,9 @@ def astar_search(problem, h=None):
         return max(getattr(n, 'f', -infinity), n.path_cost + h(n))
 
     return best_first_graph_search(problem, f)
+
+
+def effective_branchingf(exp, depth):
+    return exp**(1/float(depth))
+
+

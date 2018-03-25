@@ -105,7 +105,7 @@ class WaterDistributionState:
 
         return ch
 
-    def heuristic(self):
+    def NAheuristic(self):
         i = 0
         goal_difference = 0
         while i < len(self.vases):
@@ -194,7 +194,11 @@ class WaterPump(Problem):
                                 yield (action, nexts, x, y)
 
 
-class WaterPumpRelaxed(WaterPump):
-    """Admissible heuristic"""
+class WaterPumpDistance(WaterPump):
+    """Non-admissible heuristic"""
     def h(self, node):
-        return node.state.heuristic()
+        return node.state.NAheuristic()
+
+
+class WaterPumpAdmissible(WaterPump):
+    """TODO:Admissible heuristic"""
