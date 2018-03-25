@@ -194,6 +194,7 @@ class WaterPump(Problem):
                                 yield (action, nexts, x, y)
 
 
+
 class WaterPumpDistance(WaterPump):
     """Non-admissible heuristic"""
     def h(self, node):
