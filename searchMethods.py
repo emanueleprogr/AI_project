@@ -135,6 +135,45 @@ def astar_search(problem, h=None):
 
 
 def effective_branchingf(exp, depth):
-    return exp**(1/float(depth))
+    return bisect(exp, depth)
 
 
+def truncate(f, n):
+    """Truncates/pads a float f to n decimal places without rounding"""
+    s = '{}'.format(f)
+    if 'e' in s or 'E' in s:
+        return '{0:.{1}f}'.format(f, n)
+    i, p, d = s.partition('.')
+    return '.'.join([i, (d+'0'*n)[:n]])
+
+
+def exp(value, e):
+    i = 0
+    val = 1
+
+    while i < e:
+        val *= value
+        val = float(truncate(val, 2))
+        i += 1
+    return val
+
+def bisect(nodes, depth, lo=0, hi=2):
+
+    error = 0.05
+    while lo < hi:
+        mid = (float(lo+hi)/2)
+        i = 0
+        x = mid
+        counter = 0
+        while i <= depth:
+            e = exp(x, i)
+            counter += e
+            i += 1
+        if abs(counter - (nodes + 1)) < error:
+            return mid
+        elif counter > nodes + 1 :
+            hi = mid
+        else:
+            lo = mid
+
+    return -1

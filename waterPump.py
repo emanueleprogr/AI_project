@@ -109,9 +109,20 @@ class WaterDistributionState:
         i = 0
         goal_difference = 0
         while i < len(self.vases):
-            goal_difference = goal_difference + abs(self.vases[i].goal - self.vases[i]. value)
+            goal_difference += abs(self.vases[i].goal - self.vases[i]. value)
             i = i + 1
         return goal_difference
+
+
+    def Aheuristic(self):
+        i = 0
+        goal_difference = 0
+        while i < len(self.vases):
+            if (self.vases[i].goal - self.vases[i]. value) > 0:
+                goal_difference += self.vases[i].goal - self.vases[i].value
+            i = i + 1
+        return goal_difference
+
 
     def __str__(self):
         """Serialize the state in a human-readable form"""
@@ -194,7 +205,6 @@ class WaterPump(Problem):
                                 yield (action, nexts, x, y)
 
 
-
 class WaterPumpDistance(WaterPump):
     """Non-admissible heuristic"""
     def h(self, node):
@@ -202,4 +212,6 @@ class WaterPumpDistance(WaterPump):
 
 
 class WaterPumpAdmissible(WaterPump):
-    """TODO:Admissible heuristic"""
+    """Admissible heuristic"""
+    def h(self, node):
+        return node.state.Aheuristic()
