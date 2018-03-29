@@ -95,8 +95,8 @@ def graph_search(problem, frontier):
             print('\n**************** Stats:\nTotal nodes expanded :', counter)
             print('Solution depth :', node.depth)
             print('Penetrance :', float(node.depth)/counter)
-            print('Effective branching factor ~ ', effective_branchingf(counter, node.depth))
-            print('Path cost :', node.path_cost, '\n**************** Solution:\n')
+            """print('Effective branching factor ~ ', effective_branchingf(counter, node.depth))"""
+            print('Path cost :', node.path_cost, '\n\n**************** Solution:\n')
             return node
         serial = node.state.__str__()
         if serial not in closed:
@@ -157,9 +157,10 @@ def exp(value, e):
         i += 1
     return val
 
-def bisect(nodes, depth, lo=0, hi=2):
 
-    error = 0.05
+def bisect(nodes, depth, lo=0, hi=3):
+
+    error = nodes/260
     while lo < hi:
         mid = (float(lo+hi)/2)
         i = 0
@@ -171,7 +172,7 @@ def bisect(nodes, depth, lo=0, hi=2):
             i += 1
         if abs(counter - (nodes + 1)) < error:
             return mid
-        elif counter > nodes + 1 :
+        elif counter > nodes + 1:
             hi = mid
         else:
             lo = mid

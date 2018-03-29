@@ -116,12 +116,25 @@ class WaterDistributionState:
 
     def Aheuristic(self):
         i = 0
-        goal_difference = 0
+        y = 0
+        goal_difference = [0] * (len(self.vases))
         while i < len(self.vases):
             if (self.vases[i].goal - self.vases[i]. value) > 0:
-                goal_difference += self.vases[i].goal - self.vases[i].value
+                goal_difference[i] = self.vases[i].goal - self.vases[i].value
+                min = math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
+                while y < len(self.vases):
+                    if y != i:
+
+                        dist = math.hypot(self.vases[y].posX - self.vases[i].posX, self.vases[y].posY - self.vases[i].posY)
+                        if dist < min:
+                            min = dist
+                    y += 1
+                goal_difference[i] = goal_difference[i] * min
+
+
+
             i = i + 1
-        return goal_difference
+        return sum(goal_difference)
 
 
     def __str__(self):
@@ -149,27 +162,22 @@ class WaterDistributionState:
 
 
 class WaterPump(Problem):
-    def __init__(self, n, i, j, r, c):
+    def __init__(self, i, j, r, c):
         self.actions = ['empty', 'pump', 'takeFromI', 'transferFromI']
-        self.n = n
         self.i = i
         self.j = j
         self.make_initial_state(i, r, c)
 
-    def make_initial_state(self, n, r, c):
-        vases = []
-        vases.append(Vase(1, 3, 2, 4))
-        vases.append(Vase(n-1, n-1, 1, 1))
-        vases.append(Vase(1, 1, 3, 4))
+    def make_initial_state(self, i, r, c):
 
-        self.initial = WaterDistributionState(vases, self.i, r, c)
+        self.initial = WaterDistributionState(standardProblem2(), self.i, r, c)
 
         print('Problem:', self.__doc__, 'Initial state:')
         print(self.initial)
         print('==============')
 
     def goal_test(self, state):
-        for i in range(self.n):
+        for i in range(len(state.vases)):
             if state.vases[i].value != state.vases[i].goal:
                 return False
 
@@ -188,7 +196,7 @@ class WaterPump(Problem):
 
     def successor(self, state):
         """Legal moves (empty, pump, takeFromI, transferFromI). Implemented as a generator"""
-        list = range(self.n)
+        list = range(len(state.vases))
         for action in self.actions:
             if action == 'empty' or action == 'pump':
                 y = 0
@@ -215,3 +223,41 @@ class WaterPumpAdmissible(WaterPump):
     """Admissible heuristic"""
     def h(self, node):
         return node.state.Aheuristic()
+
+
+def basicProblem():
+    """A simple board with 2 vases"""
+    vases = []
+    vases.append(Vase(1, 3, 2, 4))
+    vases.append(Vase(2, 2, 1, 1))
+    return vases
+
+
+def basicProblem3v():
+    """A simple board with 3 vases"""
+    vases = []
+    vases.append(Vase(1, 3, 2, 4))
+    vases.append(Vase(5, 5, 1, 1))
+    vases.append(Vase(1, 1, 3, 4))
+    return vases
+
+
+def standardProblem():
+    """A board with 4 vases"""
+    vases = []
+    vases.append(Vase(1, 2, 3, 5))
+    vases.append(Vase(2, 2, 2, 3))
+    vases.append(Vase(4, 0, 1, 1))
+    vases.append(Vase(6, 1, 5, 6))
+    return vases
+
+def standardProblem2():
+    """A board with 6 vases"""
+    vases = []
+    vases.append(Vase(1, 2, 3, 5))
+    vases.append(Vase(2, 2, 2, 3))
+    vases.append(Vase(4, 0, 1, 1))
+    vases.append(Vase(6, 1, 5, 6))
+    vases.append(Vase(7, 7, 4, 4))
+    vases.append(Vase(5, 6, 0, 1))
+    return vases
