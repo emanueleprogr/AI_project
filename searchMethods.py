@@ -1,9 +1,7 @@
 from __future__ import print_function
 from __future__ import generators
-from utils import PriorityQueue, infinity, memoize, name, print_table, update
-from waterPump import Problem
-import sys
-import time
+from utils import PriorityQueue, infinity, memoize
+from waterPump import *
 import os
 import psutil
 
@@ -95,7 +93,7 @@ def graph_search(problem, frontier):
             print('\n**************** Stats:\nTotal nodes expanded :', counter)
             print('Solution depth :', node.depth)
             print('Penetrance :', float(node.depth)/counter)
-            """print('Effective branching factor ~ ', effective_branchingf(counter, node.depth))"""
+            print('Effective branching factor ~ ', effective_branchingf(counter, node.depth))
             print('Path cost :', node.path_cost, '\n\n**************** Solution:\n')
             return node
         serial = node.state.__str__()
@@ -160,7 +158,7 @@ def exp(value, e):
 
 def bisect(nodes, depth, lo=0, hi=3):
 
-    error = nodes/260
+    error = float(nodes)/100
     while lo < hi:
         mid = (float(lo+hi)/2)
         i = 0
@@ -178,3 +176,44 @@ def bisect(nodes, depth, lo=0, hi=3):
             lo = mid
 
     return -1
+
+
+def trace():
+    input = raw_input("Type the number corresponding to the type of problem you want to analize:\n"
+                       "1) basicProblem\n"
+                       "2) standardProblem\n"
+                       "3) standardProblem2\n"
+                       "4) standardProblem3\n")
+    input2 = raw_input("Type the number corresponding to the searching method:\n"
+                       "1) UniformCostSearch\n"
+                       "2) A* with distance inadmissible heuristic\n"
+                       "3) A* with widely inadmissible heuristic\n"
+                       "4) A* with admissible heuristic\n")
+    if input == "1" :
+        problem = basicProblem()
+    elif input == "2":
+        problem = standardProblem()
+    elif input == "3":
+        problem = standardProblem2()
+    elif input == "4":
+        problem = standardProblem3()
+
+    else:
+        return print ("Error: invalid number")
+
+    if input2 == "1":
+        type = WaterPump(8, 8, 0, 7, problem)
+    elif input2 == "2":
+        type = WaterPumpDistance(8, 8, 0, 7, problem)
+    elif input2 == "3":
+        type = WaterPumpInadmissible(8, 8, 0, 7, problem)
+    elif input2 == "4":
+        type = WaterPumpAdmissible(8, 8, 0, 7, problem)
+
+    else:
+        return print("Error: invalid number")
+    searcher = astar_search
+    solution = searcher(type)
+    path = solution.path()
+    path.reverse()
+    print(path)

@@ -105,23 +105,37 @@ class WaterDistributionState:
 
         return ch
 
+
+    def NAheuristic2(self):
+        i = 0
+        goal_difference = [0] * (len(self.vases))
+        while i < len(self.vases):
+            goal_difference[i] = self.vases[i].goal - self.vases[i].value
+            dist = math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
+            goal_difference[i] = goal_difference[i] * dist
+            i = i + 1
+        return sum(goal_difference) * 5
+
+
     def NAheuristic(self):
         i = 0
-        goal_difference = 0
+        goal_difference = [0] * (len(self.vases))
         while i < len(self.vases):
-            goal_difference += abs(self.vases[i].goal - self.vases[i]. value)
+            goal_difference[i] = self.vases[i].goal - self.vases[i].value
+            dist = math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
+            goal_difference[i] = goal_difference[i] * dist
             i = i + 1
-        return goal_difference
+        return sum(goal_difference)
 
 
     def Aheuristic(self):
         i = 0
-        y = 0
         goal_difference = [0] * (len(self.vases))
         while i < len(self.vases):
             if (self.vases[i].goal - self.vases[i]. value) > 0:
                 goal_difference[i] = self.vases[i].goal - self.vases[i].value
                 min = math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
+                y = 0
                 while y < len(self.vases):
                     if y != i:
 
@@ -162,15 +176,15 @@ class WaterDistributionState:
 
 
 class WaterPump(Problem):
-    def __init__(self, i, j, r, c):
+    def __init__(self, i, j, r, c, board):
         self.actions = ['empty', 'pump', 'takeFromI', 'transferFromI']
         self.i = i
         self.j = j
-        self.make_initial_state(i, r, c)
+        self.make_initial_state(i, r, c, board)
 
-    def make_initial_state(self, i, r, c):
+    def make_initial_state(self, i, r, c, board):
 
-        self.initial = WaterDistributionState(standardProblem2(), self.i, r, c)
+        self.initial = WaterDistributionState(board, self.i, r, c)
 
         print('Problem:', self.__doc__, 'Initial state:')
         print(self.initial)
@@ -214,7 +228,7 @@ class WaterPump(Problem):
 
 
 class WaterPumpDistance(WaterPump):
-    """Non-admissible heuristic"""
+    """In-admissible heuristic"""
     def h(self, node):
         return node.state.NAheuristic()
 
@@ -225,15 +239,14 @@ class WaterPumpAdmissible(WaterPump):
         return node.state.Aheuristic()
 
 
+class WaterPumpInadmissible(WaterPump):
+    """In-admissible heuristic that find a suboptimal path"""
+    def h(self, node):
+        return node.state.NAheuristic2()
+
+
+
 def basicProblem():
-    """A simple board with 2 vases"""
-    vases = []
-    vases.append(Vase(1, 3, 2, 4))
-    vases.append(Vase(2, 2, 1, 1))
-    return vases
-
-
-def basicProblem3v():
     """A simple board with 3 vases"""
     vases = []
     vases.append(Vase(1, 3, 2, 4))
@@ -252,6 +265,18 @@ def standardProblem():
     return vases
 
 def standardProblem2():
+
+    vases = []
+    vases.append(Vase(0, 0, 6, 7))
+    vases.append(Vase(5, 4, 2, 4))
+    vases.append(Vase(3, 3, 2, 2))
+    vases.append(Vase(7, 4, 1, 6))
+    vases.append(Vase(5, 5, 4, 7))
+    return vases
+
+
+
+def standardProblem3():
     """A board with 6 vases"""
     vases = []
     vases.append(Vase(1, 2, 3, 5))

@@ -1,9 +1,6 @@
-import searchMethods, waterPump
+import searchMethods
+"""The default board is a 8x8 board with pump in (8,8); to change that, manually modify 
+   function trace() in searchMethods.py."""
 
+searchMethods.trace()
 
-searcher = searchMethods.astar_search
-problem = waterPump.WaterPumpDistance(8, 8, 4, 4)
-solution = searcher(problem)
-path = solution.path()
-path.reverse()
-print(path)
