@@ -1,6 +1,6 @@
 # AI_project
 AI project for the course of Artificial Intelligence 2017-2018, University of Florence
-
+-----------------------------------------------------------------------------------------------------------------------------------
 README ITA:
 
 Codice per l'analisi e lo sviluppo della ricerca informata con il seguente assegnamento:
@@ -24,3 +24,4 @@ i = 1, . . . , n.
 Sarà poi sviluppata un euristica ammissibile e una non ammissibile da usare con A* e si potrà dunque confrontare sperimentalmente 
 il costo del cammino trovato, la penetranza, l'effective branching factor, il numero di nodi espansi rispetto alla ricerca
 a costo uniforme.
+-----------------------------------------------------------------------------------------------------------------------------------
