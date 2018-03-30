@@ -25,7 +25,8 @@ Sarà poi sviluppata un euristica ammissibile e una non ammissibile da usare con
 il costo del cammino trovato, la penetranza, l'effective branching factor, il numero di nodi espansi rispetto alla ricerca
 a costo uniforme.
 
-***********************************************************************************************************************************
+*********************************************************************************************************************************
+
 SOURCES
 -
 With many changes and additions, this code starts from :
@@ -36,4 +37,4 @@ With many changes and additions, this code starts from :
 - Paolo Frasconi's implementation of classic 15 puzzle problem with informed search.
   Full Professor of Computer Science at DINFO, University of Florence : http://ai.dinfo.unifi.it/paolo/#paolofrasconi
   
-  *********************************************************************************************************************************
+ *********************************************************************************************************************************
