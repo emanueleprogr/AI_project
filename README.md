@@ -24,4 +24,16 @@ i = 1, . . . , n.
 Sarà poi sviluppata un euristica ammissibile e una non ammissibile da usare con A* e si potrà dunque confrontare sperimentalmente 
 il costo del cammino trovato, la penetranza, l'effective branching factor, il numero di nodi espansi rispetto alla ricerca
 a costo uniforme.
------------------------------------------------------------------------------------------------------------------------------------
+
+***********************************************************************************************************************************
+SOURCES
+-
+With many changes and additions, this code starts from :
+
+- Russell And Norvig's "Artificial Intelligence - A Modern Approach"  aimacode python repository: 
+  https://github.com/aimacode/aima-python  for A* implementation, utils.py, and base class such as Node, Problem...
+  
+- Paolo Frasconi's implementation of classic 15 puzzle problem with informed search.
+  Full Professor of Computer Science at DINFO, University of Florence : http://ai.dinfo.unifi.it/paolo/#paolofrasconi
+  
+  *********************************************************************************************************************************
