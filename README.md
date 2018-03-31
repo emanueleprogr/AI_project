@@ -26,6 +26,7 @@ il costo del cammino trovato, la penetranza, l'effective branching factor, il nu
 a costo uniforme.
 
 CODICE:
+
 Il codice è sviluppato con compatibilità per Python 2.7; per poterlo eseguire attraverso Python 3.5 è necessario adattare alcune funzioni.
 Sono inoltre necessari alcuni packages esterni quali psutil, math... visibili nelle clausole import dei vari files.
 Il codice, eseguito dal file Project.py, permette di poter selezionare tra 4 istanze diverse del problema con, rispettivamente 3,4,5,6 vasi sulla board la quale è configurata di default come una 8x8  con pompa presente in posizione (1,8).
