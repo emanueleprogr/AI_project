@@ -186,9 +186,9 @@ class WaterPump(Problem):
 
         self.initial = WaterDistributionState(board, self.i, r, c)
 
-        print('Problem:', self.__doc__, 'Initial state:')
+        print('Problem:', self.__doc__, 'Initial state:\n')
         print(self.initial)
-        print('==============')
+        print('where [.,.] stands for vase with [value,goal] \n=======================================')
 
     def goal_test(self, state):
         for i in range(len(state.vases)):
@@ -265,7 +265,7 @@ def standardProblem():
     return vases
 
 def standardProblem2():
-
+    """A board with 5 vases"""
     vases = []
     vases.append(Vase(0, 0, 6, 7))
     vases.append(Vase(5, 4, 2, 4))

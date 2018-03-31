@@ -131,13 +131,18 @@ def astar_search(problem, h=None):
 
     return best_first_graph_search(problem, f)
 
+# ______________________________________________________________________________
+# Peter Norvig - With small changes/additions
+
 
 def effective_branchingf(exp, depth):
+    """Function to calculate effective branching factor b*."""
     return bisect(exp, depth)
 
 
 def truncate(f, n):
-    """Truncates/pads a float f to n decimal places without rounding"""
+    """Truncates/pads a float f to n decimal places without rounding;
+    added because float overflow."""
     s = '{}'.format(f)
     if 'e' in s or 'E' in s:
         return '{0:.{1}f}'.format(f, n)
@@ -146,6 +151,7 @@ def truncate(f, n):
 
 
 def exp(value, e):
+    """exponential reformulation that uses truncate function."""
     i = 0
     val = 1
 
@@ -157,7 +163,7 @@ def exp(value, e):
 
 
 def bisect(nodes, depth, lo=0, hi=3):
-
+    """Bisect method to find a reasonable approximation."""
     error = float(nodes)/100
     while lo < hi:
         mid = (float(lo+hi)/2)
@@ -179,6 +185,7 @@ def bisect(nodes, depth, lo=0, hi=3):
 
 
 def trace():
+    """User-friendly function to analyze search methods and problem instances."""
     input = raw_input("Type the number corresponding to the type of problem you want to analize:\n"
                        "1) basicProblem\n"
                        "2) standardProblem\n"
