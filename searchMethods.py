@@ -195,7 +195,9 @@ def trace():
                        "1) UniformCostSearch\n"
                        "2) A* with distance inadmissible heuristic\n"
                        "3) A* with widely inadmissible heuristic\n"
-                       "4) A* with admissible heuristic\n")
+                       "4) A* with admissible heuristic\n"
+                       "5) A* with improved admissible heuristic\n")
+
     if input == "1" :
         problem = basicProblem()
     elif input == "2":
@@ -216,6 +218,8 @@ def trace():
         type = WaterPumpInadmissible(8, 8, 0, 7, problem)
     elif input2 == "4":
         type = WaterPumpAdmissible(8, 8, 0, 7, problem)
+    elif input2 == "5":
+        type = WaterPumpAdmissible2(8, 8, 0, 7, problem)
 
     else:
         return print("Error: invalid number")

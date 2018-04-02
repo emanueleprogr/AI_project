@@ -124,7 +124,7 @@ class WaterDistributionState:
             goal_difference[i] = self.vases[i].goal - self.vases[i].value
             dist = math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
             goal_difference[i] = goal_difference[i] * dist
-            i = i + 1
+            i += 1
         return sum(goal_difference)
 
 
@@ -145,10 +145,29 @@ class WaterDistributionState:
                     y += 1
                 goal_difference[i] = goal_difference[i] * min
 
+            i += 1
+        return sum(goal_difference)
 
 
+    def Aheuristic2(self):
+        i = 0
+        goal_difference = [0] * (len(self.vases))
+        while i < len(self.vases):
+            if (self.vases[i].goal - self.vases[i]. value) > 0:
+                goal_difference[i] = self.vases[i].goal - self.vases[i].value
+                min = math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
+                y = 0
+                while y < len(self.vases):
+                    if y != i and (self.vases[y].value - self.vases[y].goal) >= (self.vases[i].goal - self.vases[i].value):
+
+                        dist = math.hypot(self.vases[y].posX - self.vases[i].posX, self.vases[y].posY - self.vases[i].posY)
+                        if dist < min:
+                            min = dist
+                    y += 1
+                goal_difference[i] = goal_difference[i] * min
             i = i + 1
         return sum(goal_difference)
+
 
 
     def __str__(self):
@@ -238,6 +257,10 @@ class WaterPumpAdmissible(WaterPump):
     def h(self, node):
         return node.state.Aheuristic()
 
+class WaterPumpAdmissible2(WaterPump):
+    """Admissible heuristic 2.0"""
+    def h(self, node):
+        return node.state.Aheuristic2()
 
 class WaterPumpInadmissible(WaterPump):
     """In-admissible heuristic that find a suboptimal path"""
