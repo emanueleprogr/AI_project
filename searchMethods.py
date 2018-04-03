@@ -31,10 +31,11 @@ class Node:
     def __repr__(self):
         """display depth, f, action, path_cost and state"""
         if hasattr(self, 'f'):
-            return "\n<Node: f=%d, depth=%d, action=%s, path_cost=%d\n\n%s\n>" % (self.f,
+            return "\n<Node: depth=%d, action=%s, path_cost=%d, h=%d\n\n%s\n>" % (
                                                               self.depth,
                                                               self.action,
                                                               self.path_cost,
+                                                              self.h,
                                                               self.state)
         else:
             return "<Node: depth=%d\n%s>" % (self.depth, self.state)

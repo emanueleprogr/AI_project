@@ -151,20 +151,39 @@ class WaterDistributionState:
 
     def Aheuristic2(self):
         i = 0
+        gap = [0] * (len(self.vases))
+
         goal_difference = [0] * (len(self.vases))
         while i < len(self.vases):
             if (self.vases[i].goal - self.vases[i]. value) > 0:
                 goal_difference[i] = self.vases[i].goal - self.vases[i].value
-                min = math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
+                min = goal_difference[i] * math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
+                x = -1
                 y = 0
                 while y < len(self.vases):
-                    if y != i and (self.vases[y].value - self.vases[y].goal) >= (self.vases[i].goal - self.vases[i].value):
-
-                        dist = math.hypot(self.vases[y].posX - self.vases[i].posX, self.vases[y].posY - self.vases[i].posY)
+                    dist = math.hypot(self.vases[y].posX - self.vases[i].posX, self.vases[y].posY - self.vases[i].posY)
+                    if y != i and (self.vases[y].value - self.vases[y].goal - gap[y]) >= self.vases[i].goal:
+                        dist = goal_difference[i] * dist
                         if dist < min:
                             min = dist
+                            x = y
+                    elif y != i and (self.vases[y].value - self.vases[y].goal - gap[y]) >= (self.vases[i].goal - self.vases[i].value):
+                        if self.vases[y] < self.vases[i]:
+
+                            dist_cost = (self.vases[y].value - gap[y]) * dist + (self.vases[y].value - gap[y] - goal_difference[i]) * dist
+                            if dist_cost < min:
+                                min = dist_cost
+                                x = y
+                        else:
+
+                            dist_cost = self.vases[i].value * dist + (self.vases[i].value + goal_difference[i]) * dist
+                            if dist_cost < min:
+                                min = dist_cost
+                                x = y
+                    if x >= 0:
+                        gap[x] += goal_difference[i]
                     y += 1
-                goal_difference[i] = goal_difference[i] * min
+                goal_difference[i] = min
             i = i + 1
         return sum(goal_difference)
 
