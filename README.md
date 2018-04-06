@@ -29,15 +29,15 @@ CODICE:
 
 Il codice è sviluppato con compatibilità per Python 2.7; per poterlo eseguire attraverso Python 3.5 è necessario adattare alcune funzioni.
 Sono inoltre necessari alcuni packages esterni quali psutil, math... visibili nelle clausole import dei vari files.
-Il codice, eseguito dal file Project.py, permette di poter selezionare tra 4 istanze diverse del problema con, rispettivamente 3,4,5,6 vasi sulla board la quale è configurata di default come una 8x8  con pompa presente in posizione (1,8).
-La selezione successiva permette di eseguire sul problema selezionato, una ricerca a costo uniforme oppure 3 ricerche informate A* che sfruttano diverse euristiche tra cui una ampiamente non ammissibile, una non ammissibile solo per pochi casi particolari e una ammissibile in generale.
+L'esecuzione del codice è molto semplice; eseguito dal file Project.py, permette di poter selezionare tra 4 istanze diverse del problema con, rispettivamente 3,4,5,6 vasi sulla board la quale è configurata di default come una 8x8  con pompa presente in posizione (1,8).
+La selezione successiva permette di eseguire sul problema selezionato, una ricerca a costo uniforme oppure 4 ricerche informate A* che sfruttano diverse euristiche tra cui una ampiamente non ammissibile e una ammissibile in generale.
 Eseguito il run sulla funzione trace(), nella console verrà raffigurato, in forma tabellare, lo stato iniziale poi, successivamente, una serie di informazioni sull'andamento della ricerca e un blocco "Stats" dove sono presenti i dati con cui verrà fatto il confronto; infine, verrà raffigurata la successione di stati e azioni dallo stato iniziale fino al goal.
 
 *********************************************************************************************************************************
 
 SOURCES
 -
-With many changes and additions, this code starts from :
+With changes and additions, this code starts from :
 
 - Russell And Norvig's "Artificial Intelligence - A Modern Approach"  aimacode python repository: 
   https://github.com/aimacode/aima-python  for A* implementation, utils.py, and base class such as Node, Problem...
