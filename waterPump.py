@@ -158,16 +158,21 @@ class WaterDistributionState:
             if (self.vases[i].goal - self.vases[i]. value) > 0:
                 goal_difference[i] = self.vases[i].goal - self.vases[i].value
                 min = goal_difference[i] * math.hypot(self.r - self.vases[i].posX, self.c - self.vases[i].posY)
-                x = -1
+
                 y = 0
                 while y < len(self.vases):
-                    dist = math.hypot(self.vases[y].posX - self.vases[i].posX, self.vases[y].posY - self.vases[i].posY)
+                    x = -1
+
                     if y != i and (self.vases[y].value - self.vases[y].goal - gap[y]) >= self.vases[i].goal:
+                        dist = math.hypot(self.vases[y].posX - self.vases[i].posX,
+                                          self.vases[y].posY - self.vases[i].posY)
                         dist = goal_difference[i] * dist
                         if dist < min:
                             min = dist
                             x = y
                     elif y != i and (self.vases[y].value - self.vases[y].goal - gap[y]) >= (self.vases[i].goal - self.vases[i].value):
+                        dist = math.hypot(self.vases[y].posX - self.vases[i].posX,
+                                          self.vases[y].posY - self.vases[i].posY)
                         if self.vases[y] < self.vases[i]:
 
                             dist_cost = (self.vases[y].value - gap[y]) * dist + (self.vases[y].value - gap[y] - goal_difference[i]) * dist
@@ -266,18 +271,18 @@ class WaterPump(Problem):
 
 
 class WaterPumpDistance(WaterPump):
-    """In-admissible heuristic"""
+    """Distance heuristic"""
     def h(self, node):
         return node.state.NAheuristic()
 
 
 class WaterPumpAdmissible(WaterPump):
-    """Admissible heuristic"""
+    """General admissible heuristic"""
     def h(self, node):
         return node.state.Aheuristic()
 
-class WaterPumpAdmissible2(WaterPump):
-    """Admissible heuristic 2.0"""
+class WaterPumpEfficient(WaterPump):
+    """Efficient heuristic """
     def h(self, node):
         return node.state.Aheuristic2()
 
@@ -291,9 +296,10 @@ class WaterPumpInadmissible(WaterPump):
 def basicProblem():
     """A simple board with 3 vases"""
     vases = []
-    vases.append(Vase(1, 3, 2, 4))
-    vases.append(Vase(5, 5, 1, 1))
+    vases.append(Vase(1, 3, 2, 5))
     vases.append(Vase(1, 1, 3, 4))
+    vases.append(Vase(5, 5, 1, 1))
+
     return vases
 
 

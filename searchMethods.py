@@ -4,8 +4,7 @@ from utils import PriorityQueue, infinity, memoize
 from waterPump import *
 import os
 import psutil
-
-
+import time
 class Node:
     """A node in a search tree. Contains a pointer to the parent (the node
     that this is a successor of) and to the actual state for this node. Note
@@ -102,7 +101,7 @@ def graph_search(problem, frontier):
             closed[serial] = True
             counter += 1
             frontier.extend(node.expand(problem))
-    return None
+    return "Solution not found"
 
 # ______________________________________________________________________________
 # Informed (Heuristic) Search
@@ -194,12 +193,12 @@ def trace():
                        "4) standardProblem3\n")
     input2 = raw_input("Type the number corresponding to the searching method:\n"
                        "1) UniformCostSearch\n"
-                       "2) A* with distance inadmissible heuristic\n"
+                       "2) A* with distance heuristic\n"
                        "3) A* with widely inadmissible heuristic\n"
                        "4) A* with admissible heuristic\n"
-                       "5) A* with improved admissible heuristic\n")
+                       "5) A* with efficient heuristic\n")
 
-    if input == "1" :
+    if input == "1":
         problem = basicProblem()
     elif input == "2":
         problem = standardProblem()
@@ -220,12 +219,15 @@ def trace():
     elif input2 == "4":
         type = WaterPumpAdmissible(8, 8, 0, 7, problem)
     elif input2 == "5":
-        type = WaterPumpAdmissible2(8, 8, 0, 7, problem)
+        type = WaterPumpEfficient(8, 8, 0, 7, problem)
 
     else:
         return print("Error: invalid number")
     searcher = astar_search
+    start = time.time()
     solution = searcher(type)
+    elapsed = time.time() - start
+    print('Elapsed time:', elapsed, 'seconds')
     path = solution.path()
     path.reverse()
     print(path)
